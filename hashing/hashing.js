@@ -51,15 +51,26 @@ function createBlock(line){
 
 console.log(`Blockchain is valid: ${verifyChain(Blockchain)}`);
 
-function verifyChain(bc){
+function verifyChain(blockchain){
+	let bc = blockchain.blocks;
 
+		for (let b of bc){
+			if (!isGenesis(bc[0])){
+				if (!verifyBlock(b)){
+					return false;
+				}
+			}
+			
+		}
+
+		return true;
+}
+
+function isGenesis(bc){
+  return bc.index === 0 && bc.hash === '000000' ? true : false;
 }
 
 function verifyBlock(bl){
-
-	if (isGenesis(b1)){
-		return false
-	}
 
 	if (typeof bl !== "object"){
 		return false;
