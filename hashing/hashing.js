@@ -27,17 +27,67 @@ Blockchain.blocks.push({
 	timestamp: Date.now(),
 });
 
-// TODO: insert each line into blockchain
-// for (let line of poem) {
-// }
+function createBlock(line){
+	let block = {
+		index: Blockchain.blocks[Blockchain.blocks.length - 1].index + 1,
+		prevHash: Blockchain.blocks[Blockchain.blocks.length - 1].hash,
+		data: line,
+		timestamp: Date.now()
+	}
 
-// console.log(`Blockchain is valid: ${verifyChain(Blockchain)}`);
+	Object.assign(block,  {hash: 	blockHash(`${block.index};${block.prevHash};${block.data};${block.timestamp};`).toString()})
+	return block;
+}
+
+
+
+// TODO: insert each line into blockchain
+ for (let line of poem) {
+	 Blockchain.blocks.push(createBlock(line));
+ }
+
+
+ 
+
+console.log(`Blockchain is valid: ${verifyChain(Blockchain)}`);
+
+function verifyChain(bc){
+
+}
+
+function verifyBlock(bl){
+
+	if (isGenesis(b1)){
+		return false
+	}
+
+	if (typeof bl !== "object"){
+		return false;
+	}
+	if (!bl.data){
+		return false;
+	} 
+
+	if (!bl.prevHash){
+		return false;
+	} 
+
+	if (!bl.index >= 0){
+		return false;
+	} 
+
+	if (bl.hash !== blockHash(bl).toString()){
+		return false;
+	}
+	
+	return true;
+}
 
 
 // **********************************
 
 function blockHash(bl) {
 	return crypto.createHash("sha256").update(
-		// TODO: use block data to calculate hash
+		bl
 	).digest("hex");
 }
