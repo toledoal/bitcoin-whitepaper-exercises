@@ -45,8 +45,9 @@ async function addPoem() {
 	var transactions = [];
 
 	// TODO: add poem lines as authorized transactions
-	// for (let line of poem) {
-	// }
+	for (let line of poem) {
+		transactions.push(createTransaction(line));
+	}
 
 	var bl = createBlock(transactions);
 
@@ -76,6 +77,10 @@ function transactionHash(tr) {
 	return crypto.createHash("sha256").update(
 		`${JSON.stringify(tr.data)}`
 	).digest("hex");
+}
+
+function createTransaction(line){
+	
 }
 
 async function createSignature(text,privKey) {
