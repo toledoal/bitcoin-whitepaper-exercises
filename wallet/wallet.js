@@ -81,6 +81,23 @@ async function spend(fromAccount,toAccount,amountToSpend) {
 	let input = {account: fromAccount.pubKey, amount:amountToSpend};
 	let output = {account: toAccount.pubKey, amount:amountToSpend};
 
+	var trData = {
+		inputs: [],
+		outputs: [],
+	};
+
+	var sortedInputs = fromAccount.outputs.sort((a, b) => a.amount - b.amount );
+
+	for (let input of sortedInputs){
+		let enoughCash = input.amount - amountToSpend;
+		if (Math.sign(enoughCash) === 0){
+			input.amount = enoughCash;
+		} else {
+			input.amount = 0;
+			amountToSpend = amountToSpend - input.amount;	
+		}
+	}
+
 	toAccount.inputs.push(input);
 	fromAccount.outputs.push(output);
 
