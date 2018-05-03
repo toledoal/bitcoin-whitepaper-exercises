@@ -70,14 +70,38 @@ function addAccount(privKey,pubKey) {
 	wallet.accounts[pubKey] = {
 		privKey,
 		pubKey,
-		outputs: []
+		outputs: [],
+		inputs: [],
 	};
 }
 
 async function spend(fromAccount,toAccount,amountToSpend) {
+
 	// TODO
+	toAccount.inputs.push({account: fromAccount.pubKey, amount:amountToSpend});
+	fromAccount.outputs.push({account: toAccount.pubKey, amount:amountToSpend});
+
+	let input = Blockchain.authorizeInput(fromAccount, fromAccount.privKey);
+	let output = Blockchain.authorizeInput(toAccount, toAccount.privKey);
+
+	let transaction = Blockchain.createTransaction({inputs:[input], outputs:[output]});
+
+	if (Blockchain.verifyTransaction(transaction)){
+		let bl = Blockchain.createBlock(transaction);
+		if (Blockchain.verifyBlock(bl)){
+			Blockchain.insertBlock(bl);
+		}
+	}
+
+
 }
 
 function accountBalance(account) {
-	// TODO
+    let output = wallet.accounts[account].outputs.reduce((ac,output) => {
+		return output.amount + ac;
+	}, 0);
+	let input = wallet.accounts[account].inputs.reduce((ac,input) => {
+		return input.amount + ac;
+	}, 0);
+	return output - input;
 }
