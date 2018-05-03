@@ -78,11 +78,15 @@ function addAccount(privKey,pubKey) {
 async function spend(fromAccount,toAccount,amountToSpend) {
 
 	// TODO
-	toAccount.inputs.push({account: fromAccount.pubKey, amount:amountToSpend});
-	fromAccount.outputs.push({account: toAccount.pubKey, amount:amountToSpend});
+	let input = {account: fromAccount.pubKey, amount:amountToSpend};
+	let output = {account: toAccount.pubKey, amount:amountToSpend};
 
-	let input = Blockchain.authorizeInput(fromAccount, fromAccount.privKey);
-	let output = Blockchain.authorizeInput(toAccount, toAccount.privKey);
+	toAccount.inputs.push(input);
+	fromAccount.outputs.push(output);
+
+	console.log(JSON.stringify(input) + "####################");
+	let input = Blockchain.authorizeInput(input, fromAccount.privKey);
+	let output = Blockchain.authorizeInput(output, toAccount.privKey);
 
 	let transaction = Blockchain.createTransaction({inputs:[input], outputs:[output]});
 
