@@ -84,19 +84,14 @@ async function spend(fromAccount,toAccount,amountToSpend) {
 	toAccount.inputs.push(input);
 	fromAccount.outputs.push(output);
 
-	console.log(JSON.stringify(input) + "####################");
-	let input = Blockchain.authorizeInput(input, fromAccount.privKey);
-	let output = Blockchain.authorizeInput(output, toAccount.privKey);
+	let inputAuth = Blockchain.authorizeInput(input, fromAccount.privKey);
+	let outputAuth = Blockchain.authorizeInput(output, toAccount.privKey);
 
-	let transaction = Blockchain.createTransaction({inputs:[input], outputs:[output]});
+	let transaction = Blockchain.createTransaction({inputs:[inputAuth], outputs:[outputAuth]});
 
-	if (Blockchain.verifyTransaction(transaction)){
-		let bl = Blockchain.createBlock(transaction);
-		if (Blockchain.verifyBlock(bl)){
+	
+	let bl = Blockchain.createBlock(transaction);
 			Blockchain.insertBlock(bl);
-		}
-	}
-
 
 }
 
