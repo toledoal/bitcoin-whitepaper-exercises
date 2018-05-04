@@ -59,15 +59,19 @@ function blockHash(bl) {
 	let bin = "";
 	let hash = "";
 
-	while (!hash.startsWith("0000")) 
+	while (bin !== difficulty) 
 	{
 	let nonce = randomString(4);
 	hash = crypto.createHash("sha256").update(JSON.stringify(bl) + nonce).digest("hex");
 	let hex = (hash+"").substr(0,4);
-	bin = parseInt(hex+"", 16).toString(2);
-	console.log(bin + "/" + hex);
-
+	let binary = ConvertBase(hex).from(16).to(2);
+	let bon = binary.toString().padEnd(16, '*');
+	
+	let ban = bon.match(/\*/g);
+	bin = ban !== null ? ban.length : 0;//.replace('1','');
+	//console.log(ban);
 	}
+	
 
 	return hash;
 
@@ -116,3 +120,30 @@ function randomString(length) {
     }
     return text;
 }
+
+function hexStringToBinary(str) {
+	if (!str) {
+	  return new Uint8Array();
+	}
+	
+	var a = [];
+	for (var i = 0, len = str.length; i < len; i+=2) {
+	  a.push(parseInt(str.substr(i,2),2));
+	}
+	
+	return new(a);
+  }
+
+
+function ConvertBase(num) {
+	return {
+		from : function (baseFrom) {
+			return {
+				to : function (baseTo) {
+					return parseInt(num, baseFrom).toString(baseTo);
+				}
+			};
+		}
+	};
+};
+	
