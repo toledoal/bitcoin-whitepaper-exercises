@@ -50,11 +50,27 @@ function createBlock(data) {
 
 	bl.hash = blockHash(bl);
 
+
 	return bl;
 }
 
 function blockHash(bl) {
-	// TODO
+	
+	let bin = "";
+	let hash = "";
+
+	while (!hash.startsWith("0000")) 
+	{
+	let nonce = randomString(4);
+	hash = crypto.createHash("sha256").update(JSON.stringify(bl) + nonce).digest("hex");
+	let hex = (hash+"").substr(0,4);
+	bin = parseInt(hex+"", 16).toString(2);
+	console.log(bin + "/" + hex);
+
+	}
+
+	return hash;
+
 }
 
 function hashIsLowEnough(hash) {
@@ -90,4 +106,13 @@ function verifyChain(chain) {
 	}
 
 	return true;
+}
+
+function randomString(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }
