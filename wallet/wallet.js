@@ -62,7 +62,7 @@ async function main() {
 	}
 
 	console.log(accountBalance(PUB_KEY_TEXT_1));
-	console.log(accountBalance(PUB_KEY_TEXT_2));
+	//console.log(accountBalance(PUB_KEY_TEXT_2));
 	console.log(await Blockchain.verifyChain(Blockchain.chain));
 }
 
@@ -77,26 +77,28 @@ function addAccount(privKey,pubKey) {
 
 async function spend(fromAccount,toAccount,amountToSpend) {
 
-	// TODO
-	let input = {account: fromAccount.pubKey, amount:amountToSpend};
-	let output = {account: toAccount.pubKey, amount:amountToSpend};
-
 	var trData = {
 		inputs: [],
 		outputs: [],
 	};
 
 	var sortedInputs = fromAccount.outputs.sort((a, b) => a.amount - b.amount );
-
+	//console.log(sortedInputs);
+	let inputAmounts = 0;
 	for (let input of sortedInputs){
-		let enoughCash = input.amount - amountToSpend;
-		if (Math.sign(enoughCash) === 0){
-			input.amount = enoughCash;
-		} else {
-			input.amount = 0;
-			amountToSpend = amountToSpend - input.amount;	
+		if (input.amount < amountToSpend) {
+			//throw `Don't have enough to spend ${amountToSpend}!`;
+			console.log(`Don't have enough to spend ${amountToSpend}!`);
+		} else{
+
+		inputAmounts = input.amount - amountToSpend;
+
 		}
 	}
+
+	// TODO
+	let input = {account: toAccount.pubKey, amount:amountToSpend};
+	let output = {account: fromAccount.pubKey, amount:inputAmounts};
 
 	toAccount.inputs.push(input);
 	fromAccount.outputs.push(output);
@@ -105,19 +107,30 @@ async function spend(fromAccount,toAccount,amountToSpend) {
 	let outputAuth = Blockchain.authorizeInput(output, toAccount.privKey);
 
 	let transaction = Blockchain.createTransaction({inputs:[inputAuth], outputs:[outputAuth]});
-
-	
+    
 	let bl = Blockchain.createBlock(transaction);
+	if (await Blockchain.verifyBlock(bl)){
 			Blockchain.insertBlock(bl);
+	}
+	
 
 }
 
 function accountBalance(account) {
-    let output = wallet.accounts[account].outputs.reduce((ac,output) => {
+
+	let sortedOutputs = wallet.accounts[account].outputs.sort((a, b) => a.amount - b.amount );
+	let sortedInputs = wallet.accounts[account].inputs.sort((a, b) => a.amount - b.amount );
+
+    let output = sortedOutputs.reduce((ac,output) => {
 		return output.amount + ac;
 	}, 0);
-	let input = wallet.accounts[account].inputs.reduce((ac,input) => {
-		return input.amount + ac;
+	let input = sortedInputs.reduce((ac,input) => {
+		return ac + input.amount;
 	}, 0);
-	return output - input;
+	console.log(sortedOutputs)
+	//console.log(wallet.accounts[account].outputs);
+	//console.log(`output: ${output}, input: ${input}`);
+	return Math.abs(output) - Math.abs(input);
 }
+
+

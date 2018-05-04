@@ -26,6 +26,8 @@ Object.assign(module.exports,{
 	createTransaction,
 	authorizeInput,
 	verifyChain,
+	verifyBlock,
+	verifyTransaction
 });
 
 
